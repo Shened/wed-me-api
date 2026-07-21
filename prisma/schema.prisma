@@ -4,10 +4,94 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+model Tenant {
+  id             String    @id @default(uuid())
+  slug           String    @unique // ex: claudia-joao
+  coupleName1    String
+  coupleName2    String
+  weddingDate    DateTime?
+  ceremonyPlace  String?
+  receptionPlace String?
+  dressCode      String?
+  isPublished    Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  user     User?
+  template TenantTemplate?
+  guests   Guest[]
+
+  @@map("tenants")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  tenantId     String   @unique // 1 user : 1 tenant
+  tenant       Tenant   @relation(fields: [tenantId], references: [id])
+  createdAt    DateTime @default(now())
+
+  @@map("users")
+}
+
+model Template {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  previewUrl  String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  tenantLinks TenantTemplate[]
+
+  @@map("templates")
+}
+
+model TenantTemplate {
+  tenantId      String   @id // 1 tenant só tem 1 template ativo de cada vez
+  templateId    String
+  primaryColor  String?
+  coverPhotoUrl String?
+  createdAt     DateTime @default(now())
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id])
+  template Template @relation(fields: [templateId], references: [id])
+
+  @@map("tenant_templates")
+}
+
+model Guest {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  name      String
+  phone     String?
+  qrToken   String   @unique @default(uuid()) // usado no link do RSVP
+  createdAt DateTime @default(now())
+
+  rsvp Rsvp?
+
+  @@index([tenantId])
+  @@map("guests")
+}
+
+model Rsvp {
+  id           String   @id @default(uuid())
+  guestId      String   @unique
+  guest        Guest    @relation(fields: [guestId], references: [id])
+  attending    Boolean
+  companions   Int      @default(0)
+  dietaryNotes String?
+  respondedAt  DateTime @default(now())
+
+  @@map("rsvps")
 }
