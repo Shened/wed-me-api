@@ -1,4 +1,12 @@
-import { Body, Controller, Patch, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Patch,
+  Request,
+  UseGuards,
+  Get,
+  Param,
+} from '@nestjs/common';
 import { TenantsService } from './tenants.service';
 import { UpdateTenantDto } from './dto/update-tenant.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -28,5 +36,16 @@ export class TenantsController {
     @Body() dto: SelectTemplateDto,
   ) {
     return this.tenantsService.selectTemplate(req.user.tenantId, dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('publish')
+  async publish(@Request() req: AuthenticatedRequest) {
+    return this.tenantsService.publish(req.user.tenantId);
+  }
+
+  @Get(':slug')
+  async findPublicBySlug(@Param('slug') slug: string) {
+    return this.tenantsService.findPublicBySlug(slug);
   }
 }
