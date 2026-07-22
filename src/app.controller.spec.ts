@@ -16,7 +16,9 @@ describe('AppController', () => {
 
   describe('root', () => {
     it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+      const mockRequest = { user: { userId: 'test-id', tenantId: 'test-tenant' } };
+      const result = appController.getHello(mockRequest);
+      expect(result.message).toBe('Hello World!');
     });
   });
 });
