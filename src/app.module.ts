@@ -7,6 +7,8 @@ import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { TemplatesModule } from './templates/templates.module';
 import { TenantsModule } from './tenants/tenants.module';
+import { GuestsModule } from './guests/guests.module';
+import { RsvpModule } from './rsvp/rsvp.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { TenantsModule } from './tenants/tenants.module';
     PrismaModule,
     TemplatesModule,
     TenantsModule,
+    GuestsModule,
+    RsvpModule,
   ],
   controllers: [AppController],
   providers: [AppService],
