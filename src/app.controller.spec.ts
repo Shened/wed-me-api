@@ -23,8 +23,4 @@ describe('AppController', () => {
       expect(result.message).toBe('Hello World!');
     });
   });
-
-  it('teste de propósito para falhar', () => {
-    expect(true).toBe(false);
-  });
 });
