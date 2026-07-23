@@ -11,6 +11,7 @@ import { TenantsService } from './tenants.service';
 import { UpdateTenantDto } from './dto/update-tenant.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { SelectTemplateDto } from './dto/select-template.dto';
+import { Throttle } from '@nestjs/throttler';
 
 interface AuthenticatedRequest {
   user: { userId: string; tenantId: string };
@@ -44,6 +45,7 @@ export class TenantsController {
     return this.tenantsService.publish(req.user.tenantId);
   }
 
+  @Throttle({ default: { limit: 20, ttl: 60000 } }) // Limit to 20 requests per minute
   @Get(':slug')
   async findPublicBySlug(@Param('slug') slug: string) {
     return this.tenantsService.findPublicBySlug(slug);
